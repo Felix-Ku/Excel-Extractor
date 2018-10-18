@@ -8,6 +8,8 @@ Main function:
 To-Do:
 - Reduce size of new individual workbooks
 - Fix .xls file cannot save as .xlsx
+- Simplifying the script
+- Adjust the variables (private? public?)
 - Add reference of program script used from internet
 
 Reference:
