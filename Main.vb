@@ -89,6 +89,8 @@ Public Class Main
                                     ToolStripProgressBar1.Value += 100 / count
                                 End If
                             Next
+
+                        'Problem_area{
                         ElseIf (Path.GetExtension(file) = ".xls") Then
                             ListBox2.Items.Add(file)
                             workbook = app.Workbooks.Open(file)
@@ -103,6 +105,7 @@ Public Class Main
                                 End If
                             Next
                         End If
+                        '}
 
                     Next
                     MessageBox.Show("Output done.")
