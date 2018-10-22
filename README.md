@@ -6,11 +6,19 @@ Main function:
 - Save every worksheets inside .xls or .xlsx file to new individual workbooks
 
 To-Do:
-- Reduce size of new individual workbooks
-- Fix .xls file cannot save as .xlsx
-  Solve: Specify second parameter (File Format) instead of directly changing file extension
-- Simplifying the script
-- Adjust the variables (private? public?)
+Program
+  - Reduce size of new individual workbooks
+    Fixed: Use copy function and build new workbook
+  - .xls file cannot save as .xlsx
+    Fixed: Specify second parameter (File Format) instead of directly changing file extension
+           Use copy function to copy sheet content to newly created workbook
+  - Simplifying the script
+  - Adjust the variables (private? public?)
+  - Check exist files and overwrite or not
+  - Signals
+    - XXX number of file(s) processed
+  
+Documentation
 - Add reference of program script used from internet
 
 Reference:
