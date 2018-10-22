@@ -5,8 +5,7 @@
 Main function:
 - Save every worksheets inside .xls or .xlsx file to new individual workbooks
 
-To-Do:
--Program
+To-Do (Program):
   - Reduce size of new individual workbooks
     - Fixed: Use copy function and build new workbook
   - .xls file cannot save as .xlsx
@@ -18,7 +17,7 @@ To-Do:
   - Signals
     - XXX number of file(s) processed
   
--Documentation
+To-Do (Documentation):
   - Add reference of program script used from internet
 
 Reference:
