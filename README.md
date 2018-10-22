@@ -8,9 +8,11 @@ Main function:
 To-Do:
 - Reduce size of new individual workbooks
 - Fix .xls file cannot save as .xlsx
+  Solve: Specify second parameter (File Format) instead of directly changing file extension
 - Simplifying the script
 - Adjust the variables (private? public?)
 - Add reference of program script used from internet
 
 Reference:
 [To be added]
+https://stackoverflow.com/questions/20469524/save-a-file-in-xlsx-format-in-vb
