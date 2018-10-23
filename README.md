@@ -20,6 +20,13 @@ To-Do (Program):
 To-Do (Documentation):
   - Add reference of program script used from internet
 
+Remainder & Knowledge：
+- Workbook should be closed before assiging it to "Nothing" (workbook.close() workbook=Nothing)
+- Garbage collect is related to the declaration of variables and COMs
+- gc.collect() should be used carefully
+- Buttons need to be manully disabled while running
+- ToolStripProgressBar = percentage
+
 Reference:
 [To be added]
 https://stackoverflow.com/questions/20469524/save-a-file-in-xlsx-format-in-vb
