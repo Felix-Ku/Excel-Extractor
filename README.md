@@ -34,6 +34,8 @@
 - gc.collect() should be used carefully
 - Buttons need to be manully disabled while running
 - ToolStripProgressBar = percentage
+- Note: I've separated it out into two lines because it's important not use double-dot references with Office interop (e.g., Worksheet.Cell.Value) because you end up with objects you can't release, which will cause issues with Excel not closing properly.
+https://stackoverflow.com/questions/23004274/vb-net-excel-worksheet-cells-value
 
 ## Reference:
 [To be added]
