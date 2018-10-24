@@ -1,20 +1,26 @@
-﻿Imports Excel = Microsoft.Office.Interop.Excel
+﻿'Function: Extract Excel Workbooks
+'Version: 3.0
+'Last updated date: 24/10/2018
+
+Imports Excel = Microsoft.Office.Interop.Excel
 Imports System.IO
 
 Public Class Main
-    'Excel變量 Variables for excel
-    Public xlApp As Excel.Application = New Microsoft.Office.Interop.Excel.Application() 'Excel main application
-    Public worksheet As Excel.Worksheet 'Excel worksheet
-    Public workbook As Excel.Workbook 'Excel workbook
-    Public misvalue As Object = System.Reflection.Missing.Value
-
-    '輸入輸出文件變量 Variables for file operation
-    Public output_folder As String 'Output target location
-    Public files() As String 'For storing  list of files under target location
-    Public count As Integer = 0 'Store number of files to be processed
-    Public overwritetoall As Boolean = False 'Switch for overwrite all or not
-    Public overwrite As Boolean = False 'Switch for overwrite in the next procedure or not
-    Public runclicked As Boolean = False
+    'Excel變量
+    Private app As New Excel.Application 'app 是操作 Excel 的變數
+    Private worksheet As Excel.Worksheet 'Worksheet 代表的是 Excel 工作表
+    Private workbook As Excel.Workbook 'Workbook 代表的是一個 Excel 本體
+    Private xlApp As Excel.Application = New Microsoft.Office.Interop.Excel.Application()
+    Private misvalue As Object = System.Reflection.Missing.Value
+    '輸入輸出文件變量
+    Private output_folder As String
+    Private files() As String
+    Private count As Integer = 0
+    Private filenums As Integer = 0
+    'Messages
+    Private result1 As DialogResult
+    Private resultoverwrite As DialogResult
+    Private resultoverwriteall As DialogResult
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         selectallfiles.Checked = True '預設選擇輸出模式 Default output mode to "select all files"
@@ -44,7 +50,6 @@ Public Class Main
             ToolStripStatusLabel1.Text = "Please press Run to start"
         End If
     End Sub
-
     '輸出路徑選擇 Choose the target output location
     Private Sub OutputButton_Click(sender As Object, e As EventArgs) Handles OutputButton.Click
         ToolStripProgressBar1.Value = 0
@@ -71,30 +76,105 @@ Public Class Main
         TextBox1.Text = Nothing
     End Sub
 
-    '主要處理程序 Main program
+    '主要處理程序
     Private Sub RunButton_Click(sender As Object, e As EventArgs) Handles RunButton.Click
-        runclicked = True
-        ToolStripProgressBar1.Value = 0
-        '檢查Excel是否安裝妥當 Check whether excel is installed properly
+
         If output_folder = "" Or TextBox1.Text = "" Then
             MsgBox("Please select the destinations first.")
         Else
+            'Initializing
+            ToolStripProgressBar1.Value = 0
+            verifyexcelApp()
+            numexcel() 'Calculate number of excel files
+            If count > 0 And Err.Number() = 0 Then
+                'If confirmed proceeding
+                messageConfirm()
+                If result1 = DialogResult.Yes Then
 
-            '提取Excel文檔及數量 Checked the amount of excel files 
-            If FolderBrowserDialog1.SelectedPath <> "" Or System.IO.File.Exists(OpenFileDialog1.FileName) And files IsNot Nothing Then
-                For Each file As String In files
-                    If Path.GetFileName(file)(0) <> "~" Then
-                        If (Path.GetExtension(file) = ".xls") Or (Path.GetExtension(file) = ".xlsx") Then
-                            workbook = xlApp.Workbooks.Open(file)
+                    xlApp.DisplayAlerts = True '? will affect save or save as?
+
+                    buttonhide() 'Disable buttons
+                    'Main Workbook loop
+
+                    For Each file As String In files
+                        If ((Path.GetExtension(file) = ".xlsx") Or (Path.GetExtension(file) = ".xls")) Then
+                            ''Open workbooks
+                            ListBox2.Items.Add(Path.GetFileName(file))
+                            workbook = app.Workbooks.Open(file)
+                            'Initialize progress bar for next file
+                            ToolStripProgressBar1.Value = 0
+                            ToolStripProgressBar1.Minimum = 0
+                            ''Worksheet loop
                             For i As Integer = 1 To workbook.Sheets.Count
-                                count += 1
-                            Next
-                        End If
-                    End If
-                Next
-            End If
 
-            On Error Resume Next
+                                ToolStripProgressBar1.Maximum = workbook.Sheets.Count
+
+
+                                Dim SavePath As String = output_folder + "\" + workbook.Sheets(i).Name + ".xlsx"
+                                '檢查文件重復性 Check file exist and ask overwrite or not
+                                If System.IO.File.Exists(SavePath) = True And xlApp.DisplayAlerts = True Then
+                                    Dim exist1 As DialogResult = MessageBox.Show("File " + SavePath + " already exists, do you want to overwrite all remainings?",
+                "Overwrite?",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question,
+                MessageBoxDefaultButton.Button2)
+                                    If exist1 = DialogResult.Yes Then
+                                        xlApp.DisplayAlerts = False
+                                    End If
+                                End If
+
+                                Dim problemname As String = workbook.Sheets(i).Name
+
+                                If problemname <> "Ls_XLB_WorkbookFile" And problemname <> "Ls_AgXLB_WorkbookFile" Then
+                                    Dim testbook As Excel.Workbook = app.Workbooks.Add(1)
+                                    filenums += 1
+                                    workbook.Sheets(i).copy(testbook.Sheets(1))
+                                    Try
+                                        testbook.Sheets(2).delete
+                                    Catch ex As Exception
+                                    End Try
+                                    testbook.SaveAs(SavePath, Excel.XlFileFormat.xlOpenXMLWorkbook)
+                                    testbook.Close(True)
+                                    testbook = Nothing
+                                    ToolStripStatusLabel1.Text = "Now processing [" + workbook.Name + "] to [" + workbook.Sheets(i).Name + "]..."
+                                    ToolStripProgressBar1.Value += 1
+
+
+                                End If
+                            Next
+                            ToolStripProgressBar1.Value = ToolStripProgressBar1.Maximum
+                        End If
+                    Next
+
+                    messagesuccess() 'Message:Success
+
+                    'Release objects
+                    closeObject(workbook)
+                    quitObject(xlApp)
+                    quitObject(app)
+                    releaseObject(worksheet)
+                    releaseObject(workbook)
+
+
+
+                    buttonshow() 'Enable the buttons
+
+                    '錯誤情況 Error conditions
+
+                End If
+
+            ElseIf Err.Number() <> 0 Then
+                messageExcelError()
+            Else
+                MsgBox("No Excel file(s) exist in the source destination! Please select destination again!")
+            End If
+        End If
+    End Sub
+
+    'Excel app & Files loop----------------------------------------------------
+    '檢查Excel是否安裝妥當 Check whether excel is installed properly
+    Private Sub verifyexcelApp()
+        Try
             xlApp = GetObject(, "Excel.Application")
             If Err.Number() <> 0 Then
                 Err.Clear()
@@ -104,130 +184,115 @@ Public Class Main
                     End
                 End If
             End If
+        Catch ex As Exception
+            MsgBox("Excel is not properly installed!!")
+        End Try
+    End Sub
+    '數Excel文件數量及驗證Excel檔案存在性 Check whether and how many excel files exist
+    Private Sub numexcel()
+        If FolderBrowserDialog1.SelectedPath <> "" Or System.IO.File.Exists(OpenFileDialog1.FileName) And files IsNot Nothing Then
+            For Each file As String In files
+                If ((Path.GetExtension(file) = ".xls") Or (Path.GetExtension(file) = ".xlsx")) And Path.GetFileName(file)(0) <> "~" Then
+                    count += 1
+                End If
+            Next
+        Else
+            MsgBox("Destinations invalid! Please check again!")
+        End If
+    End Sub
 
-            '確認是否繼續 Ask user to confirm proceeding or not
-            Dim result1 As DialogResult = MessageBox.Show("Are you sure you want to process files and save to " + output_folder + " ?",
-                "Confirmation",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Question,
-                MessageBoxDefaultButton.Button2)
+    'Buttons-------------------------------------------------------
+    'Buttons show
+    Private Sub buttonshow()
+        exitbut.Enabled = True
+        InputButton.Enabled = True
+        RunButton.Enabled = True
+        OutputButton.Enabled = True
+    End Sub
+    'Buttons hide
+    Private Sub buttonhide()
+        InputButton.Enabled = False
+        RunButton.Enabled = False
+        OutputButton.Enabled = False
+        exitbut.Enabled = False
+    End Sub
 
-            If result1 = DialogResult.Yes And count <> 0 Then
-
-                If (TextBox1.Text <> "") And (TextBox2.Text <> "") And Err.Number() = 0 Then
-
-                    '禁止進行中的按鈕使用 Stop buttons from functioning
-                    xlApp.DisplayAlerts = False
-                    InputButton.Enabled = False
-                    RunButton.Enabled = False
-                    OutputButton.Enabled = False
-                    exitbut.Enabled = False
-
-                    '主要處理程序 Main Workbook loop
-                    For Each file As String In files
-                        If (Path.GetExtension(file) = ".xlsx") Or (Path.GetExtension(file) = ".xls") And Path.GetFileName(file)(0) <> "~" Then
-                            '打開工作本 Open workbooks
-                            workbook = xlApp.Workbooks.Open(file)
-                            '處理工作表 Worksheet loop
-                            For i As Integer = 1 To workbook.Sheets.Count
-                                Dim testbook As Excel.Workbook = xlApp.Workbooks.Add(1)
-                                workbook.Sheets(i).copy(testbook.Sheets(1))
-                                Dim SavePath As String = output_folder + "\" + workbook.Sheets(i).Name + ".xlsx"
-                                '檢查文件重復性 Check file exist and ask overwrite or not
-                                If System.IO.File.Exists(SavePath) And overwritetoall = False Then
-                                    overwrite = False
-                                    Dim exist1 As DialogResult = MessageBox.Show("File " + SavePath + " already exists, do you want to overwrite it?",
-                "Overwrite?",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Question,
-                MessageBoxDefaultButton.Button2)
-                                    If exist1 = DialogResult.Yes Then
-                                        overwrite = True
-                                        Dim exist2 As DialogResult = MessageBox.Show("Do you want to overwrite all remaining file(s)?",
-                "Overwrite?",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Question,
-                MessageBoxDefaultButton.Button2)
-                                        If exist2 = DialogResult.Yes Then
-                                            overwritetoall = True
-                                        End If
-                                    End If
-                                Else overwrite = True
-                                End If
-                                '主要轉存程序 Main saving operation
-
-                                If overwrite = True Or overwritetoall = True Then
-                                    ListBox2.Items.Add(workbook.Sheets(i).Name)
-                                    testbook.SaveAs(SavePath, Excel.XlFileFormat.xlOpenXMLWorkbook)
-                                    ToolStripStatusLabel1.Text = "Now processing [" + workbook.Name + "] to [" + workbook.Sheets(i).Name + ".xlsx]"
-                                    If ToolStripProgressBar1.Value <= ToolStripProgressBar1.Maximum - 1 Then
-                                        ToolStripProgressBar1.Value += 100 / count
-                                    End If
-                                End If
-                                testbook = Nothing
-                                testbook.Close()
-                                GC.Collect()
-                                workbook.Close()
-                                workbook = Nothing
-                                worksheet = Nothing
-                                System.Runtime.InteropServices.Marshal.ReleaseComObject(workbook)
-                            Next
-                        End If
-
-                    Next
-                    MessageBox.Show("Output done.")
-
-                    '回復按鈕狀態 Enable the buttons and reset the variables
-                    ToolStripProgressBar1.Value = 100
-                    ToolStripStatusLabel1.Text = "Output done."
-                    exitbut.Enabled = True
-                    InputButton.Enabled = True
-                    RunButton.Enabled = True
-                    OutputButton.Enabled = True
-                    overwritetoall = False
-
-
-
-
-                    '錯誤情況 Error conditions
-                ElseIf Err.Number() <> 0 Then
-                    Dim error2 As DialogResult = MessageBox.Show("Please deal with the excel error problem first. Error=" + Err.Number(),
-                        "Error",
+    'Messages------------------------------------------------------
+    'Message: Ask user to confirm proceeding or not 確認是否繼續
+    Private Sub messageConfirm()
+        result1 = MessageBox.Show("Are you sure you want to process files and save to " + output_folder + " ?",
+            "Confirmation",
+            MessageBoxButtons.YesNoCancel,
+            MessageBoxIcon.Question,
+            MessageBoxDefaultButton.Button2)
+    End Sub
+    'Message: Ask user
+    Private Sub messageExcelError()
+        Dim error2 As DialogResult = MessageBox.Show("Please deal with the excel error problem first. Error=" + Err.Number(),
+                       "Error",
+               MessageBoxButtons.OK,
+               MessageBoxIcon.Question,
+               MessageBoxDefaultButton.Button2)
+    End Sub
+    'Message: Ask user 
+    Private Sub messagesuccess()
+        MessageBox.Show("Output done.")
+        ToolStripStatusLabel1.Text = "Output done. Press exit to leave or choose other file(s) to restart"
+        Dim numfiles As DialogResult = MessageBox.Show(filenums & " file(s) output done",
+                "Done",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Question,
                 MessageBoxDefaultButton.Button2)
-                Else
-                    MsgBox("Please select the location first.")
-                End If
-            ElseIf count = 0 Then
-                Dim error1 As DialogResult = MessageBox.Show("No excel files exist in the source destination! Please check the destination path",
-                    "Error Not found",
-            MessageBoxButtons.OK,
-            MessageBoxIcon.Question,
-            MessageBoxDefaultButton.Button2)
-            End If
-        End If
+    End Sub
+    'Message: Ask user 
+    Private Sub messageConfirm4()
 
     End Sub
 
-    '退出程式及再次垃圾收集 Quit app & garbage collect again
+    'System-------------------------------------------------------------
+    '資源回收 Quit object
+    Private Sub quitObject(ByVal obj As Object)
+        Try
+            obj.Quit()
+        Catch ex As Exception
+        End Try
+    End Sub
+    '資源回收 close object
+    Private Sub closeObject(ByVal obj As Object)
+        Try
+            obj.Close()
+        Catch ex As Exception
+        End Try
+    End Sub
+    '資源回收 release object
+    Private Sub releaseObject(ByVal obj As Object)
+        Try
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(obj)
+            obj = Nothing
+        Catch ex As Exception
+            obj = Nothing
+        End Try
+    End Sub
+
+    '退出程式 Quit app
     Private Sub Exit_Click(sender As Object, e As EventArgs) Handles exitbut.Click
         Close()
     End Sub
+    '清理Excel相關程序及資源回收 Quit Excel & garbage collect
     Private Sub Form1_FormClosing(sender As Object, e As System.Windows.Forms.FormClosingEventArgs) Handles Me.FormClosing
-        '清理Excel相關程序及資源回收 Quit Excel & garbage collect
-        If runclicked Then
-            xlApp.Quit()
-            System.Runtime.InteropServices.Marshal.ReleaseComObject(xlApp)
-            xlApp = Nothing
-            workbook = Nothing
-            worksheet = Nothing
-            GC.Collect()
-        End If
+        Try
+            releaseObject(xlApp)
+        Catch ex As Exception
+        End Try
+        closeObject(workbook)
+        quitObject(xlApp)
+        quitObject(app)
+        releaseObject(worksheet)
+        releaseObject(workbook)
+        GC.Collect()
+        GC.WaitForPendingFinalizers()
+        GC.Collect()
+        GC.WaitForPendingFinalizers()
     End Sub
 
 End Class
-
-
-
-
