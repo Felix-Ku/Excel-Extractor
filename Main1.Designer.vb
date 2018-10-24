@@ -1,9 +1,9 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
+﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
 Partial Class Main
     Inherits System.Windows.Forms.Form
 
     'Form overrides dispose to clean up the component list.
-    <System.Diagnostics.DebuggerNonUserCode()> _
+    <System.Diagnostics.DebuggerNonUserCode()>
     Protected Overrides Sub Dispose(ByVal disposing As Boolean)
         Try
             If disposing AndAlso components IsNot Nothing Then
@@ -20,14 +20,12 @@ Partial Class Main
     'NOTE: The following procedure is required by the Windows Form Designer
     'It can be modified using the Windows Form Designer.  
     'Do not modify it using the code editor.
-    <System.Diagnostics.DebuggerStepThrough()> _
+    <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
         Me.ContextMenuStrip1 = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.FolderBrowserDialog1 = New System.Windows.Forms.FolderBrowserDialog()
         Me.TextBox1 = New System.Windows.Forms.TextBox()
-        Me.ListBox1 = New System.Windows.Forms.ListBox()
-        Me.Label2 = New System.Windows.Forms.Label()
         Me.RunButton = New System.Windows.Forms.Button()
         Me.TextBox2 = New System.Windows.Forms.TextBox()
         Me.FolderBrowserDialog2 = New System.Windows.Forms.FolderBrowserDialog()
@@ -37,12 +35,13 @@ Partial Class Main
         Me.GroupBox1 = New System.Windows.Forms.GroupBox()
         Me.InputButton = New System.Windows.Forms.Button()
         Me.Panel1 = New System.Windows.Forms.Panel()
+        Me.Label3 = New System.Windows.Forms.Label()
         Me.selectsinglefile = New System.Windows.Forms.RadioButton()
         Me.selectallfiles = New System.Windows.Forms.RadioButton()
         Me.OutputButton = New System.Windows.Forms.Button()
         Me.GroupBox2 = New System.Windows.Forms.GroupBox()
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
-        Me.Button1 = New System.Windows.Forms.Button()
+        Me.exitbut = New System.Windows.Forms.Button()
         Me.Label1 = New System.Windows.Forms.Label()
         Me.ListBox2 = New System.Windows.Forms.ListBox()
         Me.StatusStrip1.SuspendLayout()
@@ -63,24 +62,6 @@ Partial Class Main
         Me.TextBox1.Name = "TextBox1"
         Me.TextBox1.Size = New System.Drawing.Size(250, 26)
         Me.TextBox1.TabIndex = 3
-        '
-        'ListBox1
-        '
-        Me.ListBox1.FormattingEnabled = True
-        Me.ListBox1.Location = New System.Drawing.Point(350, 32)
-        Me.ListBox1.Name = "ListBox1"
-        Me.ListBox1.Size = New System.Drawing.Size(199, 121)
-        Me.ListBox1.TabIndex = 5
-        '
-        'Label2
-        '
-        Me.Label2.AutoSize = True
-        Me.Label2.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label2.Location = New System.Drawing.Point(346, 9)
-        Me.Label2.Name = "Label2"
-        Me.Label2.Size = New System.Drawing.Size(114, 20)
-        Me.Label2.TabIndex = 6
-        Me.Label2.Text = "Selected file(s)"
         '
         'RunButton
         '
@@ -117,8 +98,8 @@ Partial Class Main
         'ToolStripStatusLabel1
         '
         Me.ToolStripStatusLabel1.Name = "ToolStripStatusLabel1"
-        Me.ToolStripStatusLabel1.Size = New System.Drawing.Size(131, 17)
-        Me.ToolStripStatusLabel1.Text = "Please press start to run"
+        Me.ToolStripStatusLabel1.Size = New System.Drawing.Size(303, 17)
+        Me.ToolStripStatusLabel1.Text = "Please select the mode and the source file(s) Destination"
         '
         'GroupBox1
         '
@@ -148,19 +129,29 @@ Partial Class Main
         'Panel1
         '
         Me.Panel1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
+        Me.Panel1.Controls.Add(Me.Label3)
         Me.Panel1.Controls.Add(Me.selectsinglefile)
         Me.Panel1.Controls.Add(Me.selectallfiles)
         Me.Panel1.Location = New System.Drawing.Point(15, 28)
         Me.Panel1.Name = "Panel1"
-        Me.Panel1.Size = New System.Drawing.Size(250, 37)
+        Me.Panel1.Size = New System.Drawing.Size(294, 37)
         Me.Panel1.TabIndex = 17
+        '
+        'Label3
+        '
+        Me.Label3.AutoSize = True
+        Me.Label3.Location = New System.Drawing.Point(3, 4)
+        Me.Label3.Name = "Label3"
+        Me.Label3.Size = New System.Drawing.Size(64, 24)
+        Me.Label3.TabIndex = 17
+        Me.Label3.Text = "Mode:"
         '
         'selectsinglefile
         '
         Me.selectsinglefile.AutoSize = True
         Me.selectsinglefile.Font = New System.Drawing.Font("Microsoft Sans Serif", 10.25!)
         Me.selectsinglefile.ForeColor = System.Drawing.SystemColors.ActiveCaptionText
-        Me.selectsinglefile.Location = New System.Drawing.Point(153, 7)
+        Me.selectsinglefile.Location = New System.Drawing.Point(204, 7)
         Me.selectsinglefile.Name = "selectsinglefile"
         Me.selectsinglefile.Size = New System.Drawing.Size(87, 21)
         Me.selectsinglefile.TabIndex = 16
@@ -173,7 +164,7 @@ Partial Class Main
         Me.selectallfiles.AutoSize = True
         Me.selectallfiles.Font = New System.Drawing.Font("Microsoft Sans Serif", 10.25!)
         Me.selectallfiles.ForeColor = System.Drawing.SystemColors.ActiveCaptionText
-        Me.selectallfiles.Location = New System.Drawing.Point(7, 7)
+        Me.selectallfiles.Location = New System.Drawing.Point(73, 7)
         Me.selectallfiles.Name = "selectallfiles"
         Me.selectallfiles.Size = New System.Drawing.Size(125, 21)
         Me.selectallfiles.TabIndex = 16
@@ -208,33 +199,33 @@ Partial Class Main
         '
         Me.OpenFileDialog1.FileName = "OpenFileDialog1"
         '
-        'Button1
+        'exitbut
         '
-        Me.Button1.Font = New System.Drawing.Font("Microsoft Sans Serif", 14.25!)
-        Me.Button1.ForeColor = System.Drawing.Color.Crimson
-        Me.Button1.Location = New System.Drawing.Point(200, 256)
-        Me.Button1.Name = "Button1"
-        Me.Button1.Size = New System.Drawing.Size(121, 37)
-        Me.Button1.TabIndex = 15
-        Me.Button1.Text = "Exit"
-        Me.Button1.UseVisualStyleBackColor = True
+        Me.exitbut.Font = New System.Drawing.Font("Microsoft Sans Serif", 14.25!)
+        Me.exitbut.ForeColor = System.Drawing.Color.Crimson
+        Me.exitbut.Location = New System.Drawing.Point(200, 256)
+        Me.exitbut.Name = "exitbut"
+        Me.exitbut.Size = New System.Drawing.Size(121, 37)
+        Me.exitbut.TabIndex = 15
+        Me.exitbut.Text = "Exit"
+        Me.exitbut.UseVisualStyleBackColor = True
         '
         'Label1
         '
         Me.Label1.AutoSize = True
         Me.Label1.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!)
-        Me.Label1.Location = New System.Drawing.Point(347, 161)
+        Me.Label1.Location = New System.Drawing.Point(347, 9)
         Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(126, 20)
+        Me.Label1.Size = New System.Drawing.Size(179, 20)
         Me.Label1.TabIndex = 16
-        Me.Label1.Text = "Processed file(s)"
+        Me.Label1.Text = "Processed worksheet(s)"
         '
         'ListBox2
         '
         Me.ListBox2.FormattingEnabled = True
-        Me.ListBox2.Location = New System.Drawing.Point(351, 185)
+        Me.ListBox2.Location = New System.Drawing.Point(351, 29)
         Me.ListBox2.Name = "ListBox2"
-        Me.ListBox2.Size = New System.Drawing.Size(197, 121)
+        Me.ListBox2.Size = New System.Drawing.Size(197, 290)
         Me.ListBox2.TabIndex = 17
         '
         'Main
@@ -244,14 +235,13 @@ Partial Class Main
         Me.ClientSize = New System.Drawing.Size(566, 346)
         Me.Controls.Add(Me.ListBox2)
         Me.Controls.Add(Me.Label1)
-        Me.Controls.Add(Me.Button1)
+        Me.Controls.Add(Me.exitbut)
         Me.Controls.Add(Me.StatusStrip1)
         Me.Controls.Add(Me.RunButton)
-        Me.Controls.Add(Me.Label2)
-        Me.Controls.Add(Me.ListBox1)
         Me.Controls.Add(Me.GroupBox1)
         Me.Controls.Add(Me.GroupBox2)
         Me.Name = "Main"
+        Me.Text = "Extract Excel Workbooks"
         Me.StatusStrip1.ResumeLayout(False)
         Me.StatusStrip1.PerformLayout()
         Me.GroupBox1.ResumeLayout(False)
@@ -268,8 +258,6 @@ Partial Class Main
     Friend WithEvents FolderBrowserDialog1 As FolderBrowserDialog
     Friend WithEvents TextBox1 As TextBox
     Friend WithEvents InputButton As Button
-    Friend WithEvents ListBox1 As ListBox
-    Friend WithEvents Label2 As Label
     Friend WithEvents RunButton As Button
     Friend WithEvents TextBox2 As TextBox
     Friend WithEvents OutputButton As Button
@@ -283,7 +271,8 @@ Partial Class Main
     Friend WithEvents selectsinglefile As RadioButton
     Friend WithEvents selectallfiles As RadioButton
     Friend WithEvents Panel1 As Panel
-    Friend WithEvents Button1 As Button
+    Friend WithEvents exitbut As Button
     Friend WithEvents Label1 As Label
     Friend WithEvents ListBox2 As ListBox
+    Friend WithEvents Label3 As Label
 End Class
