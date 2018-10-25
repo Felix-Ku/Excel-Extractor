@@ -5,18 +5,24 @@
 Imports Excel = Microsoft.Office.Interop.Excel
 Imports System.IO
 
+
 Public Class Main
-    'Excel變量
+
+    'Excel變量 Excel variables
     Private app As New Excel.Application 'app 是操作 Excel 的變數
     Private worksheet As Excel.Worksheet 'Worksheet 代表的是 Excel 工作表
     Private workbook As Excel.Workbook 'Workbook 代表的是一個 Excel 本體
-    Private xlApp As Excel.Application = New Microsoft.Office.Interop.Excel.Application()
+    Private xlApp As Excel.Application
     Private misvalue As Object = System.Reflection.Missing.Value
-    '輸入輸出文件變量
+    '輸入輸出文件變量 Files
     Private output_folder As String
     Private files() As String
     Private count As Integer = 0
     Private filenums As Integer = 0
+
+    Private sheetname As New List(Of String)
+    Private boxname As New List(Of Object)
+
     'Messages
     Private result1 As DialogResult
     Private resultoverwrite As DialogResult
@@ -79,6 +85,8 @@ Public Class Main
     '主要處理程序
     Private Sub RunButton_Click(sender As Object, e As EventArgs) Handles RunButton.Click
 
+        xlApp = New Microsoft.Office.Interop.Excel.Application()
+
         If output_folder = "" Or TextBox1.Text = "" Then
             MsgBox("Please select the destinations first.")
         Else
@@ -91,7 +99,8 @@ Public Class Main
                 messageConfirm()
                 If result1 = DialogResult.Yes Then
 
-                    xlApp.DisplayAlerts = True '? will affect save or save as?
+                    xlApp.DisplayAlerts = True
+                    app.DisplayAlerts = True
 
                     buttonhide() 'Disable buttons
                     'Main Workbook loop
@@ -112,7 +121,7 @@ Public Class Main
 
                                 Dim SavePath As String = output_folder + "\" + workbook.Sheets(i).Name + ".xlsx"
                                 '檢查文件重復性 Check file exist and ask overwrite or not
-                                If System.IO.File.Exists(SavePath) = True And xlApp.DisplayAlerts = True Then
+                                If System.IO.File.Exists(SavePath) = True And xlApp.DisplayAlerts = True Or app.DisplayAlerts = True Then
                                     Dim exist1 As DialogResult = MessageBox.Show("File " + SavePath + " already exists, do you want to overwrite all remainings?",
                 "Overwrite?",
                 MessageBoxButtons.YesNo,
@@ -120,15 +129,22 @@ Public Class Main
                 MessageBoxDefaultButton.Button2)
                                     If exist1 = DialogResult.Yes Then
                                         xlApp.DisplayAlerts = False
+                                        app.DisplayAlerts = False
                                     End If
                                 End If
 
                                 Dim problemname As String = workbook.Sheets(i).Name
 
                                 If problemname <> "Ls_XLB_WorkbookFile" And problemname <> "Ls_AgXLB_WorkbookFile" Then
+
+                                    worksheet = workbook.Sheets(i)
+                                    sheetname.Add(worksheet.Name)
+                                    boxname.Add(worksheet.Range("M101:M101").Value)
+
                                     Dim testbook As Excel.Workbook = app.Workbooks.Add(1)
                                     filenums += 1
                                     workbook.Sheets(i).copy(testbook.Sheets(1))
+
                                     Try
                                         testbook.Sheets(2).delete
                                     Catch ex As Exception
@@ -145,10 +161,12 @@ Public Class Main
                             ToolStripProgressBar1.Value = ToolStripProgressBar1.Maximum
                         End If
                     Next
-
+                    savetoini()
                     messagesuccess() 'Message:Success
 
                     'Release objects
+                    ''sheetname.Clear()
+                    ''boxname.Clear()
                     closeObject(workbook)
                     quitObject(xlApp)
                     quitObject(app)
@@ -199,6 +217,10 @@ Public Class Main
         Else
             MsgBox("Destinations invalid! Please check again!")
         End If
+    End Sub
+    Private Sub inifile()
+
+
     End Sub
 
     'Buttons-------------------------------------------------------
@@ -293,6 +315,54 @@ Public Class Main
         GC.WaitForPendingFinalizers()
         GC.Collect()
         GC.WaitForPendingFinalizers()
+    End Sub
+
+    Private Sub savetoini()
+        Dim baseDir As String = AppDomain.CurrentDomain.BaseDirectory
+        Dim inipath As String = baseDir + "tranpath.ini"
+        Dim iniwrite As System.IO.StreamWriter
+
+        For i As Integer = 0 To boxname.Count - 1
+            ListBox2.Items.Add(sheetname(i) & "," & boxname(i))
+        Next
+
+        Try
+            'If inifile originally not exist
+            If Not System.IO.File.Exists(inipath) Then
+                File.Create(inipath).Dispose() 'Create ini
+                iniwrite = My.Computer.FileSystem.OpenTextFileWriter(inipath, True)
+                For i As Integer = 0 To boxname.Count - 1
+                    iniwrite.WriteLine(sheetname(i) & "," & boxname(i))
+                Next
+                iniwrite.Close()
+
+                'If inifile originally exist
+            Else
+                Dim lines() As String = IO.File.ReadAllLines(inipath)
+                Dim linesdy As List(Of String) = New List(Of String)(lines)
+
+                'For j=number of lines in new excels | Fori=number of lines in existing ini file
+                For j As Integer = 0 To boxname.Count - 1
+                    Dim written As Integer = 0
+                    For i As Integer = 0 To lines.Length - 1
+                        If linesdy(i).Contains(sheetname(j)) Then
+                            linesdy(i) = (sheetname(j) & "," & boxname(j))
+                            written = 1
+                        ElseIf written = 0 And i = lines.Length - 1 Then
+                            linesdy.Add(sheetname(j) & "," & boxname(j))
+                        End If
+
+                    Next
+                Next
+                IO.File.WriteAllLines(inipath, linesdy)
+                'iniwrite = My.Computer.FileSystem.OpenTextFileWriter(inipath, True)
+            End If
+
+        Catch ex As Exception
+            MessageBox.Show("The saving process failed: {0}", ex.ToString())
+
+        End Try
+
     End Sub
 
 End Class

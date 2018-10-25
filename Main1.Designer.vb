@@ -223,9 +223,9 @@ Partial Class Main
         'ListBox2
         '
         Me.ListBox2.FormattingEnabled = True
-        Me.ListBox2.Location = New System.Drawing.Point(351, 29)
+        Me.ListBox2.Location = New System.Drawing.Point(351, 37)
         Me.ListBox2.Name = "ListBox2"
-        Me.ListBox2.Size = New System.Drawing.Size(197, 290)
+        Me.ListBox2.Size = New System.Drawing.Size(197, 277)
         Me.ListBox2.TabIndex = 17
         '
         'Main
