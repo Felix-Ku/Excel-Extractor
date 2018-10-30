@@ -1,10 +1,13 @@
 ﻿'Function: Extract Excel Workbooks
-'Version: 3.0
-'Last updated date: 24/10/2018
+'Version: 4.0
+'Last updated date: 30/10/2018
+
+'---------------------------------------
+'Variables and libraries
+'---------------------------------------
 
 Imports Excel = Microsoft.Office.Interop.Excel
 Imports System.IO
-
 
 Public Class Main
 
@@ -19,18 +22,24 @@ Public Class Main
     Private files() As String
     Private count As Integer = 0
     Private filenums As Integer = 0
-
     Private sheetname As New List(Of String)
     Private boxname As New List(Of Object)
-
     'Messages
     Private result1 As DialogResult
     Private resultoverwrite As DialogResult
     Private resultoverwriteall As DialogResult
 
+    '---------------------------------------
+    'Form loading
+    '---------------------------------------
+
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         selectallfiles.Checked = True '預設選擇輸出模式 Default output mode to "select all files"
     End Sub
+
+    '---------------------------------------
+    '資料路徑選擇 File(s) directory selecting
+    '---------------------------------------
 
     '來源路徑選擇 Choose the source files location
     Private Sub InputButton_Click(sender As Object, e As EventArgs) Handles InputButton.Click
@@ -82,7 +91,9 @@ Public Class Main
         TextBox1.Text = Nothing
     End Sub
 
-    '主要處理程序
+    '---------------------------------------
+    '主要處理程序 Main processing 
+    '---------------------------------------
     Private Sub RunButton_Click(sender As Object, e As EventArgs) Handles RunButton.Click
 
         xlApp = New Microsoft.Office.Interop.Excel.Application()
@@ -189,7 +200,10 @@ Public Class Main
         End If
     End Sub
 
-    'Excel app & Files loop----------------------------------------------------
+    '---------------------------------------
+    'Excel app & Files loop
+    '---------------------------------------
+
     '檢查Excel是否安裝妥當 Check whether excel is installed properly
     Private Sub verifyexcelApp()
         Try
@@ -218,12 +232,11 @@ Public Class Main
             MsgBox("Destinations invalid! Please check again!")
         End If
     End Sub
-    Private Sub inifile()
 
+    '---------------------------------------
+    'Buttons
+    '---------------------------------------
 
-    End Sub
-
-    'Buttons-------------------------------------------------------
     'Buttons show
     Private Sub buttonshow()
         exitbut.Enabled = True
@@ -239,7 +252,10 @@ Public Class Main
         exitbut.Enabled = False
     End Sub
 
-    'Messages------------------------------------------------------
+    '---------------------------------------
+    'Messages
+    '---------------------------------------
+
     'Message: Ask user to confirm proceeding or not 確認是否繼續
     Private Sub messageConfirm()
         result1 = MessageBox.Show("Are you sure you want to process files and save to " + output_folder + " ?",
@@ -266,12 +282,11 @@ Public Class Main
                 MessageBoxIcon.Question,
                 MessageBoxDefaultButton.Button2)
     End Sub
-    'Message: Ask user 
-    Private Sub messageConfirm4()
 
-    End Sub
+    '---------------------------------------
+    'System
+    '---------------------------------------
 
-    'System-------------------------------------------------------------
     '資源回收 Quit object
     Private Sub quitObject(ByVal obj As Object)
         Try
@@ -295,7 +310,6 @@ Public Class Main
             obj = Nothing
         End Try
     End Sub
-
     '退出程式 Quit app
     Private Sub Exit_Click(sender As Object, e As EventArgs) Handles exitbut.Click
         Close()
@@ -316,7 +330,7 @@ Public Class Main
         GC.Collect()
         GC.WaitForPendingFinalizers()
     End Sub
-
+    '儲存至ini Save as ini format
     Private Sub savetoini()
         Dim baseDir As String = AppDomain.CurrentDomain.BaseDirectory
         Dim inipath As String = baseDir + "tranpath.ini"
@@ -341,7 +355,7 @@ Public Class Main
                 Dim lines() As String = IO.File.ReadAllLines(inipath)
                 Dim linesdy As List(Of String) = New List(Of String)(lines)
 
-                'For j=number of lines in new excels | Fori=number of lines in existing ini file
+                'For j=number of lines in new excels | For i=number of lines in existing ini file
                 For j As Integer = 0 To boxname.Count - 1
                     Dim written As Integer = 0
                     For i As Integer = 0 To lines.Length - 1
