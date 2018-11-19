@@ -23,6 +23,7 @@ Partial Class Main
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Main))
         Me.ContextMenuStrip1 = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.FolderBrowserDialog1 = New System.Windows.Forms.FolderBrowserDialog()
         Me.TextBox1 = New System.Windows.Forms.TextBox()
@@ -44,6 +45,8 @@ Partial Class Main
         Me.exitbut = New System.Windows.Forms.Button()
         Me.Label1 = New System.Windows.Forms.Label()
         Me.ListBox2 = New System.Windows.Forms.ListBox()
+        Me.Button1 = New System.Windows.Forms.Button()
+        Me.BackgroundWorker1 = New System.ComponentModel.BackgroundWorker()
         Me.StatusStrip1.SuspendLayout()
         Me.GroupBox1.SuspendLayout()
         Me.Panel1.SuspendLayout()
@@ -223,16 +226,31 @@ Partial Class Main
         'ListBox2
         '
         Me.ListBox2.FormattingEnabled = True
+        Me.ListBox2.HorizontalScrollbar = True
         Me.ListBox2.Location = New System.Drawing.Point(351, 37)
         Me.ListBox2.Name = "ListBox2"
         Me.ListBox2.Size = New System.Drawing.Size(197, 277)
         Me.ListBox2.TabIndex = 17
         '
+        'Button1
+        '
+        Me.Button1.ForeColor = System.Drawing.Color.Blue
+        Me.Button1.Location = New System.Drawing.Point(142, 296)
+        Me.Button1.Name = "Button1"
+        Me.Button1.Size = New System.Drawing.Size(72, 25)
+        Me.Button1.TabIndex = 18
+        Me.Button1.Text = "Open ini file"
+        Me.Button1.UseVisualStyleBackColor = True
+        '
         'Main
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+        Me.AutoScroll = True
+        Me.AutoSize = True
+        Me.BackColor = System.Drawing.SystemColors.Control
         Me.ClientSize = New System.Drawing.Size(566, 346)
+        Me.Controls.Add(Me.Button1)
         Me.Controls.Add(Me.ListBox2)
         Me.Controls.Add(Me.Label1)
         Me.Controls.Add(Me.exitbut)
@@ -240,6 +258,9 @@ Partial Class Main
         Me.Controls.Add(Me.RunButton)
         Me.Controls.Add(Me.GroupBox1)
         Me.Controls.Add(Me.GroupBox2)
+        Me.Cursor = System.Windows.Forms.Cursors.Default
+        Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
+        Me.MaximumSize = New System.Drawing.Size(582, 384)
         Me.Name = "Main"
         Me.Text = "Extract Excel Workbooks"
         Me.StatusStrip1.ResumeLayout(False)
@@ -275,4 +296,6 @@ Partial Class Main
     Friend WithEvents Label1 As Label
     Friend WithEvents ListBox2 As ListBox
     Friend WithEvents Label3 As Label
+    Friend WithEvents Button1 As Button
+    Friend WithEvents BackgroundWorker1 As System.ComponentModel.BackgroundWorker
 End Class

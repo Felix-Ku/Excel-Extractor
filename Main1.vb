@@ -1,6 +1,8 @@
 ﻿'Function: Extract Excel Workbooks
+'Platform: Windows 7/8/10 32/64bit
+'Required preinstall: Excel 2010 or newer
 'Version: 4.0
-'Last updated date: 30/10/2018
+'Last updated date: 14/11/2018
 
 '---------------------------------------
 'Variables and libraries
@@ -144,10 +146,12 @@ Public Class Main
                                     End If
                                 End If
 
-                                Dim problemname As String = workbook.Sheets(i).Name
+                                ' 例外情況 Skip special conditions
+                                ' If error uncomment the below two lines and delete the "If...visible" line
+                                'Dim problemname As String = workbook.Sheets(i).Name
+                                'If problemname <> "Ls_XLB_WorkbookFile" And problemname <> "Ls_AgXLB_WorkbookFile" Then
 
-                                If problemname <> "Ls_XLB_WorkbookFile" And problemname <> "Ls_AgXLB_WorkbookFile" Then
-
+                                If workbook.Sheets(i).visible = True Then
                                     worksheet = workbook.Sheets(i)
                                     sheetname.Add(worksheet.Name)
                                     boxname.Add(worksheet.Range("M101:M101").Value)
@@ -163,7 +167,7 @@ Public Class Main
                                     testbook.SaveAs(SavePath, Excel.XlFileFormat.xlOpenXMLWorkbook)
                                     testbook.Close(True)
                                     testbook = Nothing
-                                    ToolStripStatusLabel1.Text = "Now processing [" + workbook.Name + "] to [" + workbook.Sheets(i).Name + "]..."
+                                    ToolStripStatusLabel1.Text = "Now processing sheet [" + workbook.Sheets(i).Name + "] in [" + workbook.Name + "]..."
                                     ToolStripProgressBar1.Value += 1
 
 
@@ -281,6 +285,7 @@ Public Class Main
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Question,
                 MessageBoxDefaultButton.Button2)
+        filenums = 0
     End Sub
 
     '---------------------------------------
@@ -336,10 +341,6 @@ Public Class Main
         Dim inipath As String = baseDir + "tranpath.ini"
         Dim iniwrite As System.IO.StreamWriter
 
-        For i As Integer = 0 To boxname.Count - 1
-            ListBox2.Items.Add(sheetname(i) & "," & boxname(i))
-        Next
-
         Try
             'If inifile originally not exist
             If Not System.IO.File.Exists(inipath) Then
@@ -365,7 +366,6 @@ Public Class Main
                         ElseIf written = 0 And i = lines.Length - 1 Then
                             linesdy.Add(sheetname(j) & "," & boxname(j))
                         End If
-
                     Next
                 Next
                 IO.File.WriteAllLines(inipath, linesdy)
@@ -373,10 +373,21 @@ Public Class Main
             End If
 
         Catch ex As Exception
-            MessageBox.Show("The saving process failed: {0}", ex.ToString())
-
+            result1 = MessageBox.Show("The saving process failed: {0}",
+            "Saving Error!",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.[Error],
+            MessageBoxDefaultButton.Button2)
         End Try
 
     End Sub
 
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+        Dim ini_file_name As String = AppDomain.CurrentDomain.BaseDirectory + "tranpath.ini"
+        If System.IO.File.Exists(ini_file_name) = True Then
+            Process.Start(ini_file_name)
+        Else
+            MsgBox("File Does Not Exist")
+        End If
+    End Sub
 End Class
